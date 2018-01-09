@@ -35,6 +35,8 @@
 #' Note that compared to default in \code{rstan}, here the default is a to sample from the priors.
 #' @param return_x_reg If \code{TRUE}, does not perform sampling, but instead returns the matrix of 
 #' predictors after processing the \code{formula}.
+#' @param gamma An optional vector defining a damping of the random walk noises. More specifically, 
+#' the variance of the conditional distribution of state_t+1 given state is of form gamma_t^2 * sigma^s2.
 #' @param ... Further arguments to \code{\link[rstan]{sampling}}.
 #' @return A list containing the \code{stanfit} object, observations \code{y},
 #'   and covariates \code{xreg} and \code{xreg_new}.
@@ -92,7 +94,7 @@
 #' }
 #' 
 walker <- function(formula, data, sigma_y_prior, beta_prior, init, chains,
-  return_x_reg = FALSE, ...) {
+  return_x_reg = FALSE, gamma = NULL, ...) {
   
   if (missing(data)) data <- environment(formula)
   # Modifying formula object, catching special functions
@@ -160,6 +162,15 @@ walker <- function(formula, data, sigma_y_prior, beta_prior, init, chains,
   if(length(sigma_y_prior) != 2) {
     stop("sigma_prior should be should be a vector of length two, defining the mean and standard deviation for the Gaussian prior of the standard deviation of y. ")
   }
+  
+  if (is.null(gamma)) {
+    gamma <- rep(1, n) 
+  } else {
+    if (length(gamma) != n) 
+      stop("The length of gamma vector should equal to the number of observations. ")
+    if (!is.numeric(gamma) | any(gamma < 0 | is.na(gamma))) 
+      stop("Argument 'gamma' should be numeric vector of nonnegative values. ")
+  } 
   
   stan_data <- list(
     k_fixed = k_fixed, 
@@ -302,7 +313,7 @@ walker <- function(formula, data, sigma_y_prior, beta_prior, init, chains,
 #'              
 walker_glm <- function(formula, data, beta_prior, init, chains,
   return_x_reg = FALSE, distribution ,
-  initial_mode = "kfas", u, mc_sim = 50, ...) {
+  initial_mode = "kfas", u, mc_sim = 50, gamma = NULL, ...) {
   
   distribution <- match.arg(distribution, choices = c("poisson", "binomial"))
   
@@ -369,7 +380,7 @@ walker_glm <- function(formula, data, beta_prior, init, chains,
   if(k_fixed > 0 && length(beta_prior) != 2) {
     stop("beta_prior should be a vector of length two, defining the mean and standard deviation for the Gaussian prior of fixed coefficients. ")
   }
- 
+  
   if (missing(u)) {
     u <- rep(1, n)
   }
@@ -432,7 +443,14 @@ walker_glm <- function(formula, data, beta_prior, init, chains,
       stop("Argument 'initial_mode' should be either 'obs', 'glm', 'kfas', or a numeric vector.")
     )
   }
-  
+  if (is.null(gamma)) {
+    gamma <- rep(1, n) 
+  } else {
+    if (length(gamma) != n) 
+      stop("The length of gamma vector should equal to the number of observations. ")
+    if (!is.numeric(gamma) | any(gamma < 0 | is.na(gamma))) 
+      stop("Argument 'gamma' should be numeric vector of nonnegative values. ")
+  } 
   stan_data <- list(
     k_fixed = k_fixed, 
     k_rw1 = k_rw1,
@@ -459,7 +477,8 @@ walker_glm <- function(formula, data, beta_prior, init, chains,
     y_original = y, 
     u = as.integer(u), 
     distribution = pmatch(distribution, c("poisson", "binomial")), 
-    N = mc_sim
+    N = mc_sim,
+    gamma = gamma
   )
   
   if (missing(chains)) chains <- 4
