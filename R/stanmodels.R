@@ -32,8 +32,8 @@ stanmodels <- sapply(stan_files, function(f) {
   stanfit$model_cpp <- list(model_cppname = stanfit$model_name, 
                             model_cppcode = stanfit$cppcode)
   return(do.call(methods::new, args = c(stanfit[-(1:3)], Class = "stanmodel", 
-                 mk_cppmodule = function(x) get(paste0("model_", model_cppname)))))
-  }
+                                        mk_cppmodule = function(x) get(paste0("model_", model_cppname)))))
+}
 )
 names(stanmodels) <- sub("\\.stan$", "", basename(names(stanmodels)))
 rm(MODELS_HOME)

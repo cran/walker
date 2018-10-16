@@ -2,6 +2,7 @@
 
 S3method(pp_check,walker_fit)
 S3method(predict,walker_fit)
+S3method(print,walker_fit)
 export(plot_coefs)
 export(plot_fit)
 export(plot_predict)

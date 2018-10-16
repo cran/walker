@@ -8,9 +8,9 @@ walker_rw1(formula, data, beta_prior, sigma_prior, init, chains,
   naive = FALSE, return_x_reg = FALSE, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{\link[stats]{formula}}. See \code{\link[stats]{lm}} for details.}
+\item{formula}{An object of class \code{\link[stats:formula]{formula}}. See \code{\link{lm}} for details.}
 
-\item{data}{An optional data.frame or object coercible to such, as in \code{\link[stats]{lm}}.}
+\item{data}{An optional data.frame or object coercible to such, as in \code{\link{lm}}.}
 
 \item{beta_prior}{A matrix with \eqn{k} rows and 2 columns, where first columns defines the 
 prior means of the Gaussian priors of the corresponding \eqn{k} regression coefficients, 
@@ -23,7 +23,7 @@ random walk noise terms. The prior distributions for all sigmas are
 Gaussians truncated to positive real axis. For non-Gaussian models, this should contain only k rows. 
 For second order random walk model, these priors correspond to the slope level standard deviations.}
 
-\item{init}{Initial value specification, see \code{\link[rstan]{sampling}}.}
+\item{init}{Initial value specification, see \code{\link{sampling}}.}
 
 \item{chains}{Number of Markov chains. Default is 4.}
 
@@ -38,7 +38,7 @@ identical results, but the latter approach is computationally much more efficien
 \item{return_x_reg}{If \code{TRUE}, does not perform sampling, but instead returns the matrix of 
 predictors after processing the \code{formula}.}
 
-\item{...}{Additional arguments to \code{\link[rstan]{sampling}}.}
+\item{...}{Additional arguments to \code{\link{sampling}}.}
 }
 \description{
 This function is the first iteration of the function \code{walker},

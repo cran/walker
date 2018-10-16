@@ -5,18 +5,18 @@
 \title{Bayesian generalized linear regression with time-varying coefficients}
 \usage{
 walker_glm(formula, data, beta_prior, init, chains, return_x_reg = FALSE,
-  distribution, initial_mode = "kfas", u, mc_sim = 50, gamma = NULL, ...)
+  distribution, initial_mode = "kfas", u, mc_sim = 50, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{\link[stats]{formula}} with additional terms 
+\item{formula}{An object of class \code{{formula}} with additional terms 
 \code{rw1} and/or \code{rw2} e.g. \code{y ~ x1 + rw1(~ -1 + x2)}. See details.}
 
-\item{data}{An optional data.frame or object coercible to such, as in \code{\link[stats]{lm}}.}
+\item{data}{An optional data.frame or object coercible to such, as in \code{{lm}}.}
 
 \item{beta_prior}{A length vector of length two which defines the 
 prior mean and standard deviation of the Gaussian prior for time-invariant coefficients}
 
-\item{init}{Initial value specification, see \code{\link[rstan]{sampling}}. 
+\item{init}{Initial value specification, see \code{\link{sampling}}. 
 Note that compared to default in \code{rstan}, here the default is a to sample from the priors.}
 
 \item{chains}{Number of Markov chains. Default is 4.}
@@ -33,15 +33,12 @@ Either \code{"obs"} (corresponds to log(y+0.1) in Poisson case),
 (default; mode is obtained from maximum likelihood estimate of the model), 
 or numeric vector (custom guess).}
 
-\item{u}{For Poisson model, a vector of exposures i.e. E(y) = u*exp(x*beta). 
+\item{u}{For Poisson model, a vector of exposures i.e. \eqn{E(y) = u*exp(x*beta)}. 
 For binomial, a vector containing the number of trials. Defaults 1.}
 
 \item{mc_sim}{Number of samples used in importance sampling. Default is 50.}
 
-\item{gamma}{An optional vector defining a damping of the random walk noises. More specifically, 
-the variance of the conditional distribution of state_t+1 given state is of form gamma_t^2 * sigma^s2.}
-
-\item{...}{Further arguments to \code{\link[rstan]{sampling}}.}
+\item{...}{Further arguments to \code{\link{sampling}}.}
 }
 \value{
 A list containing the \code{stanfit} object, observations \code{y},
@@ -76,16 +73,16 @@ analysis.
 }
 \examples{
 
-## note very low number of iterations for the CRAN checks
+\dontrun{
 
 data("discoveries", package = "datasets")
 out <- walker_glm(discoveries ~ -1 + 
   rw2(~ 1, beta_prior = c(0, 10), sigma_prior = c(0, 2), slope_prior = c(0, 2)), 
-  distribution = "poisson", iter = 50, chains = 1, refresh = 0)
+  distribution = "poisson", iter = 1000, chains = 1, refresh = 0)
 
 plot_fit(out)
 
-\dontrun{
+
 
 set.seed(1)
 n <- 25
@@ -99,7 +96,7 @@ ts.plot(y)
 
 out <- walker_glm(y ~ -1 + rw1(~ x, beta_prior = c(0, 10), 
   sigma_prior = c(0, 10)), distribution = "poisson", 
-  iter = 250, chains = 1, refresh = 0)
+  iter = 1000, chains = 1, refresh = 0)
 print(out$stanfit, pars = "sigma_rw1") ## approximate results
 if (require("diagis")) {
   weighted_mean(extract(out$stanfit, pars = "sigma_rw1")$sigma_rw1, 

@@ -9,9 +9,9 @@
 \arguments{
 \item{object}{An output from \code{\link{walker}}.}
 
-\item{...}{Further parameters to \code{\link[bayesplot]{ppc_ribbon}}.}
+\item{...}{Further parameters to \code{\link{ppc_ribbon}}.}
 }
 \description{
 Plots sample quantiles from posterior predictive sample. 
-See \code{\link[bayesplot]{ppc_ribbon}} for details.
+See \code{\link{ppc_ribbon}} for details.
 }

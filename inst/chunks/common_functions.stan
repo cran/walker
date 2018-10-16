@@ -2,8 +2,8 @@
 // note that these functions are not fully optimised yet
 
 // univariate Kalman filter for RW1+RW2 model, returns the log-likelihood
-real gaussian_filter(vector y, vector a1, matrix P1, real Ht, 
-  matrix Tt, matrix Rt, matrix xreg, real[] gamma) {
+real gaussian_filter(vector y, int[] y_miss, vector a1, matrix P1, real Ht, 
+  matrix Tt, matrix Rt, matrix xreg, vector gamma2_y) {
   
   int k = rows(xreg);
   int n = rows(y);
@@ -14,26 +14,31 @@ real gaussian_filter(vector y, vector a1, matrix P1, real Ht,
   matrix[m, m] P = P1;
 
   for (t in 1:n) {
-
-    real F = quad_form(P[1:k, 1:k], xreg[, t]) + Ht;
+    real F = quad_form(P[1:k, 1:k], xreg[, t]) + gamma2_y[t] * Ht;
     
-    if (F > 1.0e-12) { // protect against numerical issues
+    if (y_miss[t] == 0 && F > 1.0e-12) { // protect against numerical issues
       real v = y[t] - dot_product(xreg[, t], head(x, k));
       vector[m] K = P[1:m, 1:k] * xreg[, t] / F;
       x = Tt * (x + K * v);
-      P = quad_form_sym(P - K * K' * F, Tt') + gamma[t]^2 * Rt;
-      loglik = loglik - 0.5 * (log(F) + v * v / F);
+      P = quad_form_sym(P - K * K' * F, Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
+      loglik -= 0.5 * (log(F) + v * v / F);
     } else {
       x = Tt * x;
-      P = quad_form_sym(P, Tt') + gamma[t]^2 * Rt;
+      P = quad_form_sym(P, Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
     }
   }
   return loglik;
   
 }
 
-matrix gaussian_smoother(vector y, vector a1, matrix P1, real Ht, 
-  matrix Tt, matrix Rt, matrix xreg, real[] gamma) {
+matrix gaussian_smoother(vector y, int[] y_miss, vector a1, matrix P1, real Ht, 
+  matrix Tt, matrix Rt, matrix xreg,vector gamma2_y) {
 
   int k = rows(xreg);
   int n = rows(y);
@@ -44,22 +49,28 @@ matrix gaussian_smoother(vector y, vector a1, matrix P1, real Ht,
   vector[n] v;
   vector[n] F;
   matrix[m, n] K;
-  matrix[m, n+1] r;
+  matrix[m, n + 1] r;
   vector[m] tmpr;
   
   for (t in 1:n) {
     
-    F[t] = quad_form(P[1:k, 1:k], xreg[, t]) + Ht;
+    F[t] = quad_form(P[1:k, 1:k], xreg[, t]) + gamma2_y[t] * Ht;
     
-    if (F[t] > 1.0e-12) {
+    if (y_miss[t] == 0 && F[t] > 1.0e-12) {
       v[t] = y[t] - dot_product(xreg[, t], head(x, k));
       K[, t] = P[1:m, 1:k] * xreg[, t] / F[t];
       x = Tt * (x + K[,t] * v[t]);
-      P = quad_form_sym(P - K[,t] * K[,t]' * F[t], Tt') + gamma[t]^2 * Rt;
-      loglik = loglik - 0.5 * (log(F[t]) + v[t] * v[t] / F[t]);
+      P = quad_form_sym(P - K[,t] * K[,t]' * F[t], Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
+      loglik -= 0.5 * (log(F[t]) + v[t] * v[t] / F[t]);
     } else {
       x = Tt * x;
-      P = quad_form_sym(P, Tt') + gamma[t]^2 * Rt;
+      P = quad_form_sym(P, Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
     }
   }
 
@@ -67,7 +78,7 @@ matrix gaussian_smoother(vector y, vector a1, matrix P1, real Ht,
   for (tt in 1:n) {
     int t = n + 1 - tt;
     vector[m] tmp = r[, t+1];
-    if(F[t] > 1.0e-12) {
+    if(y_miss[t] == 0 && F[t] > 1.0e-12) {
       vector[m] tmp2 = rep_vector(0.0, m);
       tmp2[1:k] = xreg[, t];
       r[ ,t] = tmp2 * v[t] / F[t] + (Tt - Tt * K[,t] * tmp2')' * tmp;
@@ -81,7 +92,7 @@ matrix gaussian_smoother(vector y, vector a1, matrix P1, real Ht,
   for (t in 2:n) {
     vector[m] tmp = r[,t-1];
     vector[m] tmp2 = r[,t];
-    r[,t] = Tt * tmp + gamma[t]^2 * Rt * tmp2;
+    r[,t] = Tt * tmp + Rt[, t] .* tmp2;
   }
   return r[1:m, 1:n];
 }
@@ -91,9 +102,9 @@ matrix gaussian_smoother(vector y, vector a1, matrix P1, real Ht,
 // univariate Kalman filter & smoother for non-gaussian model, 
 // returns the log-likelihood of the corresponding approximating Gaussian model
 // and a extra correction term
-vector glm_approx_loglik(vector y, vector a1, matrix P1, vector Ht, 
+vector glm_approx_loglik(vector y, int[] y_miss, vector a1, matrix P1, vector Ht, 
   matrix Tt, matrix Rt, matrix xreg, int distribution, int[] u, 
-  vector y_original, vector xbeta_fixed, real[] gamma) {
+  vector y_original, vector xbeta_fixed) {
 
   int k = rows(xreg);
   int n = rows(y);
@@ -111,15 +122,21 @@ vector glm_approx_loglik(vector y, vector a1, matrix P1, vector Ht,
     
     F[t] = quad_form(P[1:k, 1:k], xreg[, t]) + Ht[t];
     
-    if (F[t] > 1.0e-12) {
+    if (y_miss[t] == 0 && F[t] > 1.0e-12) {
       v[t] = y[t] - dot_product(xreg[, t], head(x, k));
       K[, t] = P[1:m, 1:k] * xreg[, t] / F[t];
       x = Tt * (x + K[,t] * v[t]);
-      P = quad_form_sym(P - K[,t] * K[,t]' * F[t], Tt') + gamma[t]^2 * Rt;
-      loglik[1] = loglik[1] - 0.5 * (log(F[t]) + v[t] * v[t] / F[t]);
+      P = quad_form_sym(P - K[,t] * K[,t]' * F[t], Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
+      loglik[1] -= 0.5 * (log(F[t]) + v[t] * v[t] / F[t]);
     } else {
       x = Tt * x;
-      P = quad_form_sym(P, Tt') + gamma[t]^2 * Rt;
+      P = quad_form_sym(P, Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
     }
   }
 
@@ -127,7 +144,7 @@ vector glm_approx_loglik(vector y, vector a1, matrix P1, vector Ht,
   for (tt in 1:n) {
     int t = n + 1 - tt;
     vector[m] tmp = r[, t+1];
-    if(F[t] > 1.0e-12) {
+    if(y_miss[t] == 0 && F[t] > 1.0e-12) {
       vector[m] tmp2 = rep_vector(0.0, m);
       tmp2[1:k] = xreg[, t];
       r[ ,t] = tmp2 * v[t] / F[t] + (Tt - Tt * K[,t] * tmp2')' * tmp;
@@ -141,24 +158,27 @@ vector glm_approx_loglik(vector y, vector a1, matrix P1, vector Ht,
   for (t in 2:n) {
     vector[m] tmp = r[,t-1];
     vector[m] tmp2 = r[,t];
-    r[,t] = Tt * tmp + gamma[t]^2 * Rt * tmp2;
+    r[,t] = Tt * tmp + Rt[, t] .* tmp2;
   }
 
   // add a correction term
-  // Poisson case, generalization to binomial etc straightforward, see for example Durbin and Koopman 2012
   if (distribution == 1) {
     for(t in 1:n) {
-      real xbeta_rw = dot_product(xreg[,t], r[1:k, t]);
-      loglik[2] = loglik[2] + y_original[t] * (xbeta_rw + xbeta_fixed[t]) - 
-      u[t] * exp(xbeta_rw + xbeta_fixed[t]) +
+      if (y_miss[t] == 0){
+        real xbeta_rw = dot_product(xreg[,t], r[1:k, t]);
+        loglik[2] += y_original[t] * (xbeta_rw + xbeta_fixed[t]) - 
+        u[t] * exp(xbeta_rw + xbeta_fixed[t]) +
           0.5 * (y[t] - xbeta_rw)^2 / Ht[t];
+      }
     }
   } else {
     for(t in 1:n) {
-     real xbeta_rw = dot_product(xreg[,t], r[1:k, t]);
-      loglik[2] = loglik[2] + y_original[t] * (xbeta_rw + xbeta_fixed[t]) - 
-      u[t] * log1p(exp(xbeta_rw + xbeta_fixed[t])) +
+      if (y_miss[t] == 0){
+        real xbeta_rw = dot_product(xreg[,t], r[1:k, t]);
+        loglik[2] += y_original[t] * (xbeta_rw + xbeta_fixed[t]) - 
+        u[t] * log1p(exp(xbeta_rw + xbeta_fixed[t])) +
           0.5 * (y[t] - xbeta_rw)^2 / Ht[t];
+      }
     }
   }
   return loglik;
@@ -168,10 +188,10 @@ vector glm_approx_loglik(vector y, vector a1, matrix P1, vector Ht,
 // univariate Kalman filter & smoother for non-gaussian model, 
 // returns the log-likelihood of the corresponding approximating Gaussian model
 // and a extra correction term
-matrix glm_approx_smoother(vector y, vector a1, matrix P1, vector Ht, 
-  matrix Tt, matrix Rt, matrix xreg, real[] gamma) {
+matrix glm_approx_smoother(vector y, int[] y_miss, vector a1, matrix P1, vector Ht, 
+  matrix Tt, matrix Rt, matrix xreg) {
 
-int k = rows(xreg);
+  int k = rows(xreg);
   int n = rows(y);
   int m = rows(a1);
   vector[m] x = a1;
@@ -186,27 +206,33 @@ int k = rows(xreg);
     
     F[t] = quad_form(P[1:k, 1:k], xreg[, t]) + Ht[t];
     
-    if (F[t] > 1.0e-12) {
+    if (y_miss[t] == 0 && F[t] > 1.0e-12) {
       v[t] = y[t] - dot_product(xreg[, t], head(x, k));
       K[, t] = P[1:m, 1:k] * xreg[, t] / F[t];
       x = Tt * (x + K[,t] * v[t]);
-      P = quad_form_sym(P - K[,t] * K[,t]' * F[t], Tt') + gamma[t]^2 * Rt;
+      P = quad_form_sym(P - K[,t] * K[,t]' * F[t], Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
     } else {
       x = Tt * x;
-      P = quad_form_sym(P, Tt') + gamma[t]^2 * Rt;
+      P = quad_form_sym(P, Tt');
+      for (i in 1:m) {
+         P[i, i] += Rt[i, t];
+      }
     }
   }
 
-  r[,n+1] = rep_vector(0.0, m);
+  r[, n + 1] = rep_vector(0.0, m);
   for (tt in 1:n) {
     int t = n + 1 - tt;
     vector[m] tmp = r[, t+1];
-    if(F[t] > 1.0e-12) {
+    if(y_miss[t] == 0 && F[t] > 1.0e-12) {
       vector[m] tmp2 = rep_vector(0.0, m);
       tmp2[1:k] = xreg[, t];
-      r[ ,t] = tmp2 * v[t] / F[t] + (Tt - Tt * K[,t] * tmp2')' * tmp;
+      r[, t] = tmp2 * v[t] / F[t] + (Tt - Tt * K[,t] * tmp2')' * tmp;
     } else {
-      r[,t] = Tt' * tmp;
+      r[, t] = Tt' * tmp;
     }
   }
   
@@ -215,7 +241,7 @@ int k = rows(xreg);
   for (t in 2:n) {
     vector[m] tmp = r[,t-1];
     vector[m] tmp2 = r[,t];
-    r[,t] = Tt * tmp + gamma[t]^2 * Rt * tmp2;
+    r[,t] = Tt * tmp + Rt[, t] .* tmp2;
   }
 
   return r[1:m, 1:n];

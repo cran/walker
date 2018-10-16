@@ -22,5 +22,5 @@ plot_coefs(object, level = 0.05, alpha = 0.33, transform = identity,
 }
 \description{
 Plots sample quantiles from posterior predictive sample. 
-See \code{\link[bayesplot]{ppc_ribbon}} for details.
+See \code{\link{ppc_ribbon}} for details.
 }

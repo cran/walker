@@ -13,7 +13,7 @@ plot_fit(object, level = 0.05, alpha = 0.33, ...)
 
 \item{alpha}{Transparency level for \code{geom_ribbon}.}
 
-\item{...}{Further arguments to \code{\link[bayesplot]{ppc_ribbon}}.}
+\item{...}{Further arguments to \code{\link{ppc_ribbon}}.}
 }
 \description{
 Plot the fitted values and sample quantiles for a walker object

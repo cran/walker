@@ -5,13 +5,13 @@
 \title{Bayesian regression with random walk coefficients}
 \usage{
 walker(formula, data, sigma_y_prior, beta_prior, init, chains,
-  return_x_reg = FALSE, gamma = NULL, ...)
+  return_x_reg = FALSE, gamma_y = NULL, ...)
 }
 \arguments{
-\item{formula}{An object of class \code{\link[stats]{formula}} with additional terms 
+\item{formula}{An object of class \code{{formula}} with additional terms 
 \code{rw1} and/or \code{rw2} e.g. \code{y ~ x1 + rw1(~ -1 + x2)}. See details.}
 
-\item{data}{An optional data.frame or object coercible to such, as in \code{\link[stats]{lm}}.}
+\item{data}{An optional data.frame or object coercible to such, as in \code{{lm}}.}
 
 \item{sigma_y_prior}{A vector of length two, defining the truncated Gaussian prior for 
 the observation level standard deviation. Not used in \code{walker_glm}.}
@@ -19,7 +19,7 @@ the observation level standard deviation. Not used in \code{walker_glm}.}
 \item{beta_prior}{A length vector of length two which defines the 
 prior mean and standard deviation of the Gaussian prior for time-invariant coefficients}
 
-\item{init}{Initial value specification, see \code{\link[rstan]{sampling}}. 
+\item{init}{Initial value specification, see \code{\link{sampling}}. 
 Note that compared to default in \code{rstan}, here the default is a to sample from the priors.}
 
 \item{chains}{Number of Markov chains. Default is 4.}
@@ -27,10 +27,10 @@ Note that compared to default in \code{rstan}, here the default is a to sample f
 \item{return_x_reg}{If \code{TRUE}, does not perform sampling, but instead returns the matrix of 
 predictors after processing the \code{formula}.}
 
-\item{gamma}{An optional vector defining a damping of the random walk noises. More specifically, 
-the variance of the conditional distribution of state_t+1 given state is of form gamma_t^2 * sigma^s2.}
+\item{gamma_y}{An optional vector defining a damping of the observational level noise. 
+More specifically, \eqn{\sigma_t = gamma_t * \sigma_y}.}
 
-\item{...}{Further arguments to \code{\link[rstan]{sampling}}.}
+\item{...}{Further arguments to \code{\link{sampling}}.}
 }
 \value{
 A list containing the \code{stanfit} object, observations \code{y},
@@ -66,7 +66,7 @@ rw1_fit <- walker(Nile ~ -1 +
     beta_prior = c(1000, 100), 
     sigma_prior = c(0, 100)), 
   sigma_y_prior = c(0, 100), 
-  iter = 50, chains = 1)
+  iter = 200, chains = 1)
   
 rw2_fit <- walker(Nile ~ -1 + 
   rw2(~ 1,
@@ -74,7 +74,7 @@ rw2_fit <- walker(Nile ~ -1 +
     sigma_prior = c(0, 100), 
     slope_prior = c(0, 100)), 
   sigma_y_prior = c(0, 100), 
-  iter = 50, chains = 1)
+  iter = 200, chains = 1)
   
 g_y <- geom_point(data = data.frame(y = Nile, x = time(Nile)), 
   aes(x, y, alpha = 0.5), inherit.aes = FALSE) 
@@ -94,7 +94,7 @@ sin_t <- sin(2 * pi * 1:n / 4)
 dat <- data.frame(y, cos_t, sin_t)
 fit <- walker(y ~ -1 + 
   rw1(~ cos_t + sin_t, beta_prior = c(0, 10), sigma_prior = c(0, 2)), 
-  sigma_y_prior = c(0, 10), data = dat, chains = 1, iter = 250)
+  sigma_y_prior = c(0, 10), data = dat, chains = 1, iter = 500)
 print(fit$stanfit, pars = c("sigma_y", "sigma_rw1"))
 
 plot_coefs(fit)
