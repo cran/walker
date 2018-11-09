@@ -1,4 +1,4 @@
-378940c0d236fa1725420b4d9a385faf *DESCRIPTION
+1b77b1a5066e41f5cf6860034e4cb0e8 *DESCRIPTION
 14ddf903d3d4dd6ac21761da46484d72 *NAMESPACE
 6eae1cc16c9aa8b7438581fb666a0f4d *R/RcppExports.R
 17ca1f428447daf6cca6db8a4709340a *R/plot_coefs.R
@@ -12,7 +12,7 @@ bca578adb86833f8c1e3dd94b6c47124 *R/stanmodels.R
 b4fb79ffb1d54a35ac2362aa792798a0 *R/walker.R
 8cca18f52f2a0d60771664b1a036c784 *R/walker_rw1.R
 f46561638a69358e89d74675982c6bf0 *R/zzz.R
-de8b659090b5ba76054e34990f5de4a5 *README.md
+eb79b7cf0a8637bc1c501948e7f1b06f *README.md
 867689c9d8aefe59c563098a548de4d7 *build/vignette.rds
 9f8f3f5efc4e3795aa3a9a1e801fefa8 *cleanup
 28618a94f0eb129270cf0ea1c5ed7a69 *cleanup.win
@@ -27,7 +27,7 @@ e8052872cb8fa5754cf71d7e2ce5121c *exec/walker_lm.stan
 eb649feb0fd94b9cdec4bb2370b4a1dd *inst/chunks/license.stan
 47e5574e20dabb310b3271d4f88eff2c *inst/doc/walker.R
 b267ea259053907ee3a543071d985b97 *inst/doc/walker.Rmd
-ee3217a821a3c82a4ece43e43f77e654 *inst/doc/walker.html
+d563d48817ec5a9aa185a15b995db47a *inst/doc/walker.html
 6b877a291a5b46bd57da567a54154e1d *man/plot_coefs.Rd
 72c3af7b1378fd47547dd92d6bd8b923 *man/plot_fit.Rd
 ed4d126ca735a8465e5e903061e7b928 *man/plot_predict.Rd
@@ -39,8 +39,8 @@ bca9c5ecc5796d048ce0c3580a59e0b2 *man/rw2.Rd
 5c5867cf0307f0dca17348000a633389 *man/walker.Rd
 6bf7a5423ebf47bce35fd12539db0e48 *man/walker_glm.Rd
 42c81f5abeda146f68875a9ebf102d28 *man/walker_rw1.Rd
-2379f37249e629ea15cbf48ec1f4ab76 *src/Makevars
-dccd5ab7088168f3f71f9d70155cd00e *src/Makevars.win
+fa79f65a36e5f73a5f3bb82d4e2da669 *src/Makevars
+d0d87686caccacce5cd49b10dbd5714c *src/Makevars.win
 35a8e4717cae6bd440184982a225437e *src/Modules.cpp
 6492012b3b183d41475e84b9c4deb10a *src/RcppExports.cpp
 3614b079b10eaec4ad75ac2d41041c03 *src/include/models.hpp

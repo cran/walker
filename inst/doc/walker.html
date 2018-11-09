@@ -174,7 +174,7 @@ ts.plot(cbind(signal, y), col = 1:2)</code></pre>
 ## sigma_rw1[2] 0.08    0.00 0.04 0.01 0.05 0.07 0.10  0.17  1499    1
 ## sigma_rw1[3] 0.31    0.00 0.10 0.15 0.24 0.30 0.37  0.54  1184    1
 ## 
-## Samples were drawn using NUTS(diag_e) at Sun Oct 21 20:55:48 2018.
+## Samples were drawn using NUTS(diag_e) at Thu Nov 08 13:55:50 2018.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
@@ -237,7 +237,7 @@ plot_coefs(fit_rw2)</code></pre>
 ## sigma_b[2] 0.08    0.00 0.04 0.01 0.05 0.08 0.10  0.17   230 1.01
 ## sigma_b[3] 0.31    0.01 0.09 0.15 0.24 0.30 0.36  0.52   358 1.01
 ## 
-## Samples were drawn using NUTS(diag_e) at Sun Oct 21 21:02:04 2018.
+## Samples were drawn using NUTS(diag_e) at Thu Nov 08 14:01:18 2018.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
@@ -256,14 +256,14 @@ print(kalman_walker$stanfit, pars = c(&quot;sigma_y&quot;, &quot;sigma_b&quot;))
 ## sigma_b[2] 0.08       0 0.04 0.02 0.05 0.07 0.10  0.17  1402    1
 ## sigma_b[3] 0.31       0 0.10 0.16 0.24 0.30 0.37  0.55  1417    1
 ## 
-## Samples were drawn using NUTS(diag_e) at Sun Oct 21 21:02:44 2018.
+## Samples were drawn using NUTS(diag_e) at Thu Nov 08 14:01:56 2018.
 ## For each parameter, n_eff is a crude measure of effective sample size,
 ## and Rhat is the potential scale reduction factor on split chains (at 
 ## convergence, Rhat=1).</code></pre>
 <pre class="r"><code>sum(get_elapsed_time(kalman_walker$stanfit))</code></pre>
-<pre><code>## [1] 38.712</code></pre>
+<pre><code>## [1] 37.036</code></pre>
 <pre class="r"><code>sum(get_elapsed_time(naive_walker$stanfit))</code></pre>
-<pre><code>## [1] 287.674</code></pre>
+<pre><code>## [1] 249.465</code></pre>
 <p>With naive implementation we get smaller effective sample sizes and much higher computation time, as well as some indications of divergence problems, even with adjusted step size (argument <code>adapt_delta</code>).</p>
 </div>
 <div id="discussion" class="section level2">
