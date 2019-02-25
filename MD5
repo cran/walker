@@ -1,4 +1,4 @@
-07686e4b7950a7a15fb213a6c72a07fc *DESCRIPTION
+3e7c9d268d0a3155119bfeefee57a49a *DESCRIPTION
 aac45453907402f238510a1ad5d1f416 *NAMESPACE
 f2da10698833484cff9909d81ee7198d *R/RcppExports.R
 886c7faf2a53ad41a02409339729d672 *R/plot_coefs.R
@@ -8,11 +8,11 @@ f2da10698833484cff9909d81ee7198d *R/RcppExports.R
 9b046d942d446406264668a39cfa5f7a *R/predict.R
 459ce1f2284d9e35b22d169c1c194caf *R/print_fit.R
 f7276b33ccc80ae4dd0210763ad5841b *R/rw.R
-7164bf66806c5391a663e2c0a77a9a25 *R/stanmodels.R
+09f60aa2c1a589dd87147d314edcb287 *R/stanmodels.R
 157b1ac0f8208cc633157aec2e0bb7dd *R/walker.R
 60ec7d29ae29dcd396b69381a7ccde16 *R/walker_rw1.R
 f46561638a69358e89d74675982c6bf0 *R/zzz.R
-c9862d59b9a79b4731f3429212cebb73 *README.md
+4154211c4a576629632f87d82428d39f *README.md
 9e226d8c0503f0bef35c762eec993347 *build/vignette.rds
 9f8f3f5efc4e3795aa3a9a1e801fefa8 *cleanup
 360c74682de860a3eabaf91af3cbec36 *cleanup.win
@@ -27,7 +27,7 @@ e780a125e280e0a04c382af701eec813 *exec/walker_glm.stan
 242d731498f84ebef9384944a4a801a5 *inst/chunks/license.stan
 b5834df8ccb4638ee84d4d46ffbd8151 *inst/doc/walker.R
 b267ea259053907ee3a543071d985b97 *inst/doc/walker.Rmd
-59b73448401ddfe81bf7c2f447fb7da7 *inst/doc/walker.html
+1d9ff70927bccc528695b85fc10b49dd *inst/doc/walker.html
 a80a066e6afcd32c574c8eea0c3e77d9 *man/plot_coefs.Rd
 b5bc2a355aea180edfb208424e29c8e4 *man/plot_fit.Rd
 54bea33701d57d2759bfe9b154b8d435 *man/plot_predict.Rd
