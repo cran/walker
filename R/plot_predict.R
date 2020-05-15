@@ -1,7 +1,7 @@
 #' Prediction intervals for walker object
 #' 
-#' Plots sample quantiles from pre
-#' See \code{\link{ppc_ribbon}} for details.
+#' Plots sample quantiles and posterior means of the predictions 
+#' of the \code{predict.walker_fit} output.
 #' 
 #' @importFrom ggplot2 ggplot facet_wrap geom_ribbon geom_line 
 #' @importFrom bayesplot color_scheme_get theme_default
@@ -27,11 +27,11 @@
 #' data_old <- data.frame(y = y[1:(n-10)], x = x[1:(n-10)])
 #' rw2_fit <- walker(y ~ 1 + 
 #'                     rw2(~ -1 + x,
-#'                         beta_prior = c(0, 10), 
-#'                         sigma_prior = c(0, 10), 
-#'                         slope_prior = c(0, 10)), 
-#'                   sigma_y_prior = c(0, 10), 
-#'                   beta_prior = c(0, 10),
+#'                         beta = c(0, 10), 
+#'                         sigma = c(0, 10), 
+#'                         nu = c(0, 10)), 
+#'                   sigma_y = c(0, 10), 
+#'                   beta = c(0, 10),
 #'                   iter = 400, chains = 1, data = data_old)
 #' 
 #' pred <- predict(rw2_fit, newdata = data.frame(x=x[(n-9):n]))
@@ -44,20 +44,18 @@ plot_predict <- function(object, level = 0.05, alpha = 0.33){
   pred_data <- as.data.frame(as.table(object$y_new))  
   pred_data$time <- as.numeric(levels(pred_data$time))[pred_data$time]
   names(pred_data)[3] <- "value"
-  grouped <- group_by(pred_data, time)
-  quantiles <- summarise_(grouped, 
-    .dots = list(
-      lwr = ~quantile(value, prob = level), 
-      median = ~quantile(value, prob = 0.5),
-      upr = ~quantile(value, prob = 1 - level)))
+  quantiles <- summarise(group_by(pred_data, time), 
+    lwr = quantile(.data$value, prob = level), 
+    median = quantile(.data$value, prob = 0.5),
+    upr = quantile(.data$value, prob = 1 - level))
   
   ggplot(
     data = quantiles,
-    mapping = aes_(
-      x = ~ time,
-      y = ~ median,
-      ymin = ~ lwr,
-      ymax = ~ upr
+    mapping = aes(
+      x = .data$time,
+      y = .data$median,
+      ymin = .data$lwr,
+      ymax = .data$upr
     )
   )  +
     geom_ribbon(aes_(color = "y_new", fill = "y_new"),

@@ -4,8 +4,17 @@
 \alias{walker}
 \title{Bayesian regression with random walk coefficients}
 \usage{
-walker(formula, data, sigma_y_prior, beta_prior, init, chains,
-  return_x_reg = FALSE, gamma_y = NULL, ...)
+walker(
+  formula,
+  data,
+  sigma_y_prior,
+  beta,
+  init,
+  chains,
+  return_x_reg = FALSE,
+  gamma_y = NULL,
+  ...
+)
 }
 \arguments{
 \item{formula}{An object of class \code{{formula}} with additional terms 
@@ -16,7 +25,7 @@ walker(formula, data, sigma_y_prior, beta_prior, init, chains,
 \item{sigma_y_prior}{A vector of length two, defining the truncated Gaussian prior for 
 the observation level standard deviation. Not used in \code{walker_glm}.}
 
-\item{beta_prior}{A length vector of length two which defines the 
+\item{beta}{A length vector of length two which defines the 
 prior mean and standard deviation of the Gaussian prior for time-invariant coefficients}
 
 \item{init}{Initial value specification, see \code{\link{sampling}}. 
@@ -49,9 +58,9 @@ in order to marginalise over the coefficients for efficient sampling.
 The \code{rw1} and \code{rw2} functions used in the formula define new formulas 
 for the first and second order random walks. In addition, these functions 
 need to be supplied with priors for initial coefficients and the 
-standard devitions. For second order random walk model, these sigma priors 
-correspond to the standard deviation of slope distrurbances. For \code{rw2}, 
-also a prior for the initial slope needs to be defined. See examples.
+standard deviations. For second order random walk model, these sigma priors 
+correspond to the standard deviation of slope disturbances. For \code{rw2}, 
+also a prior for the initial slope nu needs to be defined. See examples.
 }
 \note{
 Beware of overfitting and identifiability issues. In particular, 
@@ -63,16 +72,16 @@ be careful in not defining multiple intercept terms (only one should be present)
 
 rw1_fit <- walker(Nile ~ -1 + 
   rw1(~ 1, 
-    beta_prior = c(1000, 100), 
-    sigma_prior = c(0, 100)), 
+    beta = c(1000, 100), 
+    sigma = c(0, 100)), 
   sigma_y_prior = c(0, 100), 
   iter = 200, chains = 1)
   
 rw2_fit <- walker(Nile ~ -1 + 
   rw2(~ 1,
-    beta_prior = c(1000, 100), 
-    sigma_prior = c(0, 100), 
-    slope_prior = c(0, 100)), 
+    beta = c(1000, 100), 
+    sigma = c(0, 100), 
+    nu = c(0, 100)), 
   sigma_y_prior = c(0, 100), 
   iter = 200, chains = 1)
   
@@ -93,7 +102,7 @@ cos_t <- cos(2 * pi * 1:n / 4)
 sin_t <- sin(2 * pi * 1:n / 4)
 dat <- data.frame(y, cos_t, sin_t)
 fit <- walker(y ~ -1 + 
-  rw1(~ cos_t + sin_t, beta_prior = c(0, 10), sigma_prior = c(0, 2)), 
+  rw1(~ cos_t + sin_t, beta = c(0, 10), sigma = c(0, 2)), 
   sigma_y_prior = c(0, 10), data = dat, chains = 1, iter = 500)
 print(fit$stanfit, pars = c("sigma_y", "sigma_rw1"))
 
