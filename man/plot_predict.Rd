@@ -4,10 +4,14 @@
 \alias{plot_predict}
 \title{Prediction intervals for walker object}
 \usage{
-plot_predict(object, level = 0.05, alpha = 0.33)
+plot_predict(object, draw_obs = NULL, level = 0.05, alpha = 0.33)
 }
 \arguments{
 \item{object}{An output from \code{\link{predict.walker_fit}}.}
+
+\item{draw_obs}{Either \code{"response"}, \code{"mean"}, or \code{"none"}, 
+where \code{"mean"} is response variable divided by number of trials or exposures 
+in case of binomial/poisson models.}
 
 \item{level}{Level for intervals. Default is 0.05, leading to 90\% intervals.}
 
@@ -47,6 +51,7 @@ rw2_fit <- walker(y ~ 1 +
 pred <- predict(rw2_fit, newdata = data.frame(x=x[(n-9):n]))
 data_new <- data.frame(t = (n-9):n, y = y[(n-9):n])
 plot_predict(pred) + 
-  geom_line(data=data_new, aes(t, y), linetype="dashed", colour = "red", inherit.aes = FALSE)
+  geom_line(data=data_new, aes(t, y), linetype = "dashed", 
+  colour = "red", inherit.aes = FALSE)
 
 }

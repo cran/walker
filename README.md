@@ -21,6 +21,14 @@ devtools::install_github("helske/walker")
 
 NEWS
 ---------------------------------------------
+### 19.10.2020
+
+* Predict method now allow predictions on link scale.
+* Added argument for plot_predict for controlling the drawing of past observations.
+* Fix out-of-sample predictions for non-Gaussian models.
+* New function: `predict_counterfactual` which can be used to predict the past assuming new 
+  values for the covariates.
+
 ### 13.8.2020
 
 * Proper export of `pp_check` for `bayesplot`, fixed some minor technical issues.
