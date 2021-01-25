@@ -18,8 +18,8 @@ y <- rnorm(n, signal, 0.5)
 ts.plot(cbind(signal, y), col = 1:2)
 
 ## ----walker-------------------------------------------------------------------
-fit <- walker(y ~ -1 + rw1(~ x1 + x2, beta = c(0, 10), sigma = c(0, 10)), 
-  refresh = 0, chains = 2, sigma_y = c(0, 10), seed = 1)
+fit <- walker(y ~ -1 + rw1(~ x1 + x2, beta = c(0, 10), sigma = c(2, 10)), 
+  refresh = 0, chains = 1, sigma_y = c(2, 1), seed = 1)
 
 ## ----pars---------------------------------------------------------------------
 print(fit$stanfit, pars = c("sigma_y", "sigma_rw1"))
@@ -33,7 +33,7 @@ ts.plot(cbind(rw, beta1, beta2, matrix(betas, ncol = 3)),
   col = rep(1:3, 2), lty = rep(1:2, each = 3))
 
 ## ----plot_pretty_betas--------------------------------------------------------
-plot_coefs(fit, scales = "free") + theme_bw()
+plot_coefs(fit, scales = "free") + ggplot2::theme_bw()
 
 ## ----ppc----------------------------------------------------------------------
 pp_check(fit)
@@ -45,19 +45,38 @@ plot_predict(pred)
 
 ## ----walker_rw2---------------------------------------------------------------
 fit_rw2 <-walker(y ~ -1 + 
-    rw2(~ x1 + x2, beta = c(0, 10), sigma = c(0, 10), nu = c(0, 10)), 
-  refresh = 0, chains = 2, sigma_y = c(0, 10))
-plot_coefs(fit_rw2, scales = "free") + theme_bw()
+    rw2(~ x1 + x2, beta = c(0, 10), sigma = c(2, 0.001), nu = c(0, 10)), 
+  refresh = 0, chains = 1, sigma_y = c(2, 0.001))
+plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
 
-## ----naive--------------------------------------------------------------------
-naive_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 2,
-  beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
-  naive = TRUE, control = list(adapt_delta = 0.95, max_treedepth = 15))
+## ----naive, eval = FALSE------------------------------------------------------
+#  naive_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
+#    naive = TRUE,
+#    control = list(adapt_delta = 0.99, max_treedepth = 12))
+#  
+#  kalman_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
+#    naive = FALSE)
 
-## ----kalman-------------------------------------------------------------------
-kalman_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 2,
-   beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
-   naive = FALSE)
+## ----naive-run, eval = FALSE, echo = FALSE------------------------------------
+#  # actual code run, remove betas in order to reduce size of the package
+#  naive_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
+#    naive = TRUE, save_warmup = FALSE,
+#    control = list(adapt_delta = 0.99, max_treedepth = 12))
+#  
+#  kalman_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
+#    naive = FALSE, save_warmup = FALSE)
+#  
+#  # can't use the pars argument as it is already defined inside walker_rw1
+#  # just shorten them manually
+#  naive_fit$stanfit@sim$samples[[1]][5:305] <- 1 #need to keep the length correct
+#  kalman_fit$stanfit@sim$samples[[1]][5:305] <- 1
+
+## ---- echo = FALSE------------------------------------------------------------
+load("vignette_results.rds")
 
 ## ----times--------------------------------------------------------------------
 print(naive_fit$stanfit, pars = c("sigma_y", "sigma_b"))

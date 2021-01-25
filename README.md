@@ -1,3 +1,4 @@
+[![R-CMD-check](https://github.com/helske/walker/workflows/R-CMD-check/badge.svg)](https://github.com/helske/walker/actions)
 [![cran version](https://www.r-pkg.org/badges/version/walker)](https://cran.r-project.org/package=walker)
 [![downloads](https://cranlogs.r-pkg.org/badges/walker)](https://cranlogs.r-pkg.org/badges/walker)
 
@@ -21,6 +22,20 @@ devtools::install_github("helske/walker")
 
 NEWS
 ---------------------------------------------
+### 25.1.2021
+
+* For linear-Gaussian models the stanfit object now returns partial log-likelihood terms
+  p(y_t | y_1,...,y_t-1,theta) which can be used for leave-future-out cross-validation (see function `lfo`). 
+* New function `lfo` for estimating the leave-future-out information criterion.
+* Priors for the standard deviation parameters are now Gamma instead of truncated normal, which helps to avoid (rare) problems where sampler wonders close to degenerate case of having all variances near zero. There are also default prior Gamma(2, 0.0001) for these parameters now.
+* Fixed some issues in the vignette added a reference to the walker paper.
+  
+### 3.11.2020
+
+* stanfit object of walker output now contains also variable `logLik`.
+  For non-Gaussian models this is the approximate log-likelihood, the
+  unbiased estimate is then `logLik + mean(w)`, where `w` are the returned weights.
+
 ### 19.10.2020
 
 * Predict method now allow predictions on link scale.
