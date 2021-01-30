@@ -18,8 +18,9 @@ y <- rnorm(n, signal, 0.5)
 ts.plot(cbind(signal, y), col = 1:2)
 
 ## ----walker-------------------------------------------------------------------
+set.seed(1)
 fit <- walker(y ~ -1 + rw1(~ x1 + x2, beta = c(0, 10), sigma = c(2, 10)), 
-  refresh = 0, chains = 1, sigma_y = c(2, 1), seed = 1)
+  refresh = 0, chains = 1, sigma_y = c(2, 1))
 
 ## ----pars---------------------------------------------------------------------
 print(fit$stanfit, pars = c("sigma_y", "sigma_rw1"))
@@ -50,37 +51,49 @@ fit_rw2 <-walker(y ~ -1 +
 plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
 
 ## ----naive, eval = FALSE------------------------------------------------------
-#  naive_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#  set.seed(1) # set seed to simulate same initial values for both methods
+#  naive_fit <- walker_rw1(y ~ x1 + x2, refresh = 0,
+#    chains = 2, cores = 2, iter = 1e4,
 #    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
 #    naive = TRUE,
 #    control = list(adapt_delta = 0.99, max_treedepth = 12))
 #  
-#  kalman_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#  set.seed(1)
+#  kalman_fit <- walker_rw1(y ~ x1 + x2, refresh = 0,
+#    chains = 2, cores = 2, iter = 1e4,
 #    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
 #    naive = FALSE)
 
 ## ----naive-run, eval = FALSE, echo = FALSE------------------------------------
 #  # actual code run, remove betas in order to reduce size of the package
-#  naive_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#  set.seed(1)
+#  naive_fit <- walker_rw1(y ~ x1 + x2, refresh = 0,
+#    chains = 2, cores = 2, iter = 1e4,
 #    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
 #    naive = TRUE, save_warmup = FALSE,
+#    pars = c("sigma_y", "sigma_b"),
 #    control = list(adapt_delta = 0.99, max_treedepth = 12))
 #  
-#  kalman_fit <- walker_rw1(y ~ x1 + x2, seed = 1, refresh = 0, chains = 1,
+#  set.seed(1)
+#  kalman_fit <- walker_rw1(y ~ x1 + x2, refresh = 0,
+#    chains = 2, cores = 2, iter = 1e4,
 #    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
-#    naive = FALSE, save_warmup = FALSE)
+#    naive = FALSE, save_warmup = FALSE,
+#    pars = c("sigma_y", "sigma_b"))
 #  
-#  # can't use the pars argument as it is already defined inside walker_rw1
-#  # just shorten them manually
-#  naive_fit$stanfit@sim$samples[[1]][5:305] <- 1 #need to keep the length correct
-#  kalman_fit$stanfit@sim$samples[[1]][5:305] <- 1
+#  save(naive_fit, kalman_fit, file = "vignette_results.rds")
 
 ## ---- echo = FALSE------------------------------------------------------------
 load("vignette_results.rds")
 
-## ----times--------------------------------------------------------------------
+## ----warnings-and-time--------------------------------------------------------
+check_hmc_diagnostics(naive_fit$stanfit)
+check_hmc_diagnostics(kalman_fit$stanfit)
+
+get_elapsed_time(naive_fit$stanfit)
+get_elapsed_time(kalman_fit$stanfit)
+
+## ----main-results-------------------------------------------------------------
 print(naive_fit$stanfit, pars = c("sigma_y", "sigma_b"))
 print(kalman_fit$stanfit, pars = c("sigma_y", "sigma_b"))
-sum(get_elapsed_time(naive_fit$stanfit))
-sum(get_elapsed_time(kalman_fit$stanfit))
 

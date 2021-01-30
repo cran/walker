@@ -22,6 +22,10 @@ devtools::install_github("helske/walker")
 
 NEWS
 ---------------------------------------------
+### 27.1.2021
+
+* Fixed some issues in the vignette which resulted CRAN warnings.
+
 ### 25.1.2021
 
 * For linear-Gaussian models the stanfit object now returns partial log-likelihood terms

@@ -1,4 +1,4 @@
-de0df44a5991eb3331427a2d33317eb0 *DESCRIPTION
+804e178edb4531fb602a2f9a09f9caee *DESCRIPTION
 62b95fdac4c017fa8d55d70e6c95e0e3 *NAMESPACE
 6203066a5805ec57e67e62fe168d3ede *R/RcppExports.R
 82ab1b8c91833fe2e92454fe2b9112cd *R/fitted.R
@@ -13,16 +13,16 @@ a27b071c7fb0136251c0cebb9471c9cb *R/predict_counterfactual.R
 3dae9ac2fc334f3b425eaf4ad9cf1f29 *R/rw.R
 d6709314f840e9ed9dbb9c47a30a735c *R/stanmodels.R
 577060b091ed34108b556d9f297f78b6 *R/walker.R
-d64662967ca5899a4bb3236108fd1d5f *R/walker_rw1.R
+92883089bccd68ea1c121808f4eb5b73 *R/walker_rw1.R
 87d92f6bdac4545eda21aedbd3a7f6db *R/zzz.R
-97a84c3d591b95d15c979777a85af8d4 *README.md
+7dddc96fb08a0aad1fd83d9548e31de4 *README.md
 6984b68d61b8f11913cd35a974e18d14 *build/vignette.rds
 1cc60bdd8610449d30184e0bb374bf46 *configure
 363506993327ae3b7de4216fa3a1aa2b *configure.win
 b862d36dc86a70541222d322fd9e530a *inst/CITATION
-0374fdd70fb722314e921f7e9a21fe15 *inst/doc/walker.R
-7eb8be54f5cc33d3f29596c9991e03f4 *inst/doc/walker.Rmd
-4696bfa6f567bed3fb5f4431048612a7 *inst/doc/walker.html
+ac2a494f26692caa639abb0ed1d18b9e *inst/doc/walker.R
+7aa304fc7daa5182ffc4ffa1adb4ae19 *inst/doc/walker.Rmd
+6b3161ed9fb2a327dcb99351745c5c0c *inst/doc/walker.html
 855c064dbf8deaff96c8dc8a87169109 *inst/include/stan_meta_header.hpp
 eb649feb0fd94b9cdec4bb2370b4a1dd *inst/stan/include/license.stan
 1852f3f4f29335300fd7902bb53ea04e *inst/stan/rw1_model.stan
@@ -45,7 +45,7 @@ b790c0c436320169b8041c50be1589ca *man/rw1.Rd
 8bcabecb23730c8f1983e28796bcacae *man/summary.walker_fit.Rd
 467eacbd5d652bcdd6ab5877902adb08 *man/walker.Rd
 5014554e9befacb932b6158ffc480e76 *man/walker_glm.Rd
-6a44a31f403fc285e26e32491f9998b6 *man/walker_rw1.Rd
+9ec68bd1f431055f78f1ae88f6a6518a *man/walker_rw1.Rd
 928692f906b4653537bb2eef26e63de4 *src/Makevars
 4c11bb4a1eabb5badcb060d39591f4ce *src/Makevars.win
 f462bef212219c6ef00e030f4271b1c9 *src/RcppExports.cpp
@@ -61,6 +61,6 @@ ef4eac4b53ae2dbcdb778e8645ed4328 *src/predict.cpp
 a6b9d3246a846d47fdbf62157c09b900 *src/stanExports_walker_lm.h
 d7fa00729e6a8367683757f88b90a41f *tests/test_all.R
 da9f4d042a0b7fc242941ff1e4fd91f7 *tests/testthat/tests.R
-79012a6d45295d57046670a27ad6ebb2 *vignettes/vignette_results.rds
-7eb8be54f5cc33d3f29596c9991e03f4 *vignettes/walker.Rmd
+1e5dbaa4a927daf9cb98b75211199a2b *vignettes/vignette_results.rds
+7aa304fc7daa5182ffc4ffa1adb4ae19 *vignettes/walker.Rmd
 2c185107efa2f63f248e7b145a358a25 *vignettes/walker.bib
