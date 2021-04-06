@@ -148,6 +148,8 @@ walker <- function(formula, data, sigma_y_prior = c(2, 0.01), beta, init, chains
         rownames(attr(all_terms, "factors"))[rws])
     mf$formula <- formula(drop.terms(all_terms, drops, keep.response = TRUE))
     mf$formula <- update.formula(mf$formula, . ~ . - .emptyx., simplify = TRUE)
+  } else {
+    stop("Model does not contain time-varying part, use ordinary regression modelling instead.")
   }
   
   # build y and xreg
@@ -271,7 +273,7 @@ walker <- function(formula, data, sigma_y_prior = c(2, 0.01), beta, init, chains
   stanfit <- sampling(stanmodels$walker_lm,
     data = stan_data, chains = chains, init = init,
     pars = c("sigma_y", "sigma_rw1", "sigma_rw2", "beta_fixed", "beta_rw", 
-      "nu", "y_fit", "y_rep", "logLik"), ...)
+      "nu", "y_fit", "y_rep", "log_lik"), ...)
   
   structure(list(stanfit = stanfit, y = y, xreg_fixed = xreg_fixed, 
     xreg_rw = xreg_rw, distribution = "gaussian",
@@ -402,6 +404,8 @@ walker_glm <- function(formula, data, beta, init, chains,
         rownames(attr(all_terms, "factors"))[rws])
     mf$formula <- formula(drop.terms(all_terms, drops, keep.response = TRUE))
     mf$formula <- update.formula(mf$formula, . ~ . - .emptyx., simplify = TRUE)
+  } else {
+    stop("Model does not contain time-varying part, use ordinary GLM instead.")
   }
   
   # build y and xreg
@@ -583,7 +587,7 @@ walker_glm <- function(formula, data, beta, init, chains,
   stanfit <- sampling(stanmodels$walker_glm,
     data = stan_data, chains = chains, init = init,
     pars = c("sigma_rw1", "sigma_rw2", "beta_fixed", "beta_rw", 
-      "nu", "y_fit", "y_rep", "weights", "logLik"), ...)
+      "nu", "y_fit", "y_rep", "weights", "log_lik"), ...)
   
   structure(list(stanfit = stanfit, y = y, xreg_fixed = xreg_fixed, 
     xreg_rw = xreg_rw, u = u, distribution = distribution, 
