@@ -426,10 +426,10 @@ private:
         double sigma_y_shape;
         double sigma_y_rate;
         double beta_fixed_mean;
-        double beta_rw1_mean;
-        double beta_rw2_mean;
         double beta_fixed_sd;
+        double beta_rw1_mean;
         double beta_rw1_sd;
+        double beta_rw2_mean;
         double beta_rw2_sd;
         double sigma_rw1_shape;
         double sigma_rw2_shape;
@@ -596,31 +596,31 @@ public:
             pos__ = 0;
             beta_fixed_mean = vals_r__[pos__++];
             current_statement_begin__ = 121;
-            context__.validate_dims("data initialization", "beta_rw1_mean", "double", context__.to_vec());
-            beta_rw1_mean = double(0);
-            vals_r__ = context__.vals_r("beta_rw1_mean");
-            pos__ = 0;
-            beta_rw1_mean = vals_r__[pos__++];
-            current_statement_begin__ = 122;
-            context__.validate_dims("data initialization", "beta_rw2_mean", "double", context__.to_vec());
-            beta_rw2_mean = double(0);
-            vals_r__ = context__.vals_r("beta_rw2_mean");
-            pos__ = 0;
-            beta_rw2_mean = vals_r__[pos__++];
-            current_statement_begin__ = 123;
             context__.validate_dims("data initialization", "beta_fixed_sd", "double", context__.to_vec());
             beta_fixed_sd = double(0);
             vals_r__ = context__.vals_r("beta_fixed_sd");
             pos__ = 0;
             beta_fixed_sd = vals_r__[pos__++];
             check_greater_or_equal(function__, "beta_fixed_sd", beta_fixed_sd, 0);
-            current_statement_begin__ = 124;
+            current_statement_begin__ = 122;
+            context__.validate_dims("data initialization", "beta_rw1_mean", "double", context__.to_vec());
+            beta_rw1_mean = double(0);
+            vals_r__ = context__.vals_r("beta_rw1_mean");
+            pos__ = 0;
+            beta_rw1_mean = vals_r__[pos__++];
+            current_statement_begin__ = 123;
             context__.validate_dims("data initialization", "beta_rw1_sd", "double", context__.to_vec());
             beta_rw1_sd = double(0);
             vals_r__ = context__.vals_r("beta_rw1_sd");
             pos__ = 0;
             beta_rw1_sd = vals_r__[pos__++];
             check_greater_or_equal(function__, "beta_rw1_sd", beta_rw1_sd, 0);
+            current_statement_begin__ = 124;
+            context__.validate_dims("data initialization", "beta_rw2_mean", "double", context__.to_vec());
+            beta_rw2_mean = double(0);
+            vals_r__ = context__.vals_r("beta_rw2_mean");
+            pos__ = 0;
+            beta_rw2_mean = vals_r__[pos__++];
             current_statement_begin__ = 125;
             context__.validate_dims("data initialization", "beta_rw2_sd", "double", context__.to_vec());
             beta_rw2_sd = double(0);
@@ -732,44 +732,47 @@ public:
             stan::math::assign(gamma2_y,elt_multiply(gamma_y, gamma_y));
             // execute transformed data statements
             current_statement_begin__ = 145;
-            stan::model::assign(Tt, 
-                        stan::model::cons_list(stan::model::index_min_max((k_rw1 + 1), k), stan::model::cons_list(stan::model::index_min_max((k + 1), m), stan::model::nil_index_list())), 
-                        diag_matrix(rep_vector(1.0, k_rw2)), 
-                        "assigning variable Tt");
-            current_statement_begin__ = 147;
+            if (as_bool(logical_gt(k_rw2, 0))) {
+                current_statement_begin__ = 146;
+                stan::model::assign(Tt, 
+                            stan::model::cons_list(stan::model::index_min_max((k_rw1 + 1), k), stan::model::cons_list(stan::model::index_min_max((k + 1), m), stan::model::nil_index_list())), 
+                            diag_matrix(rep_vector(1.0, k_rw2)), 
+                            "assigning variable Tt");
+            }
+            current_statement_begin__ = 148;
             for (int i = 1; i <= k_rw1; ++i) {
-                current_statement_begin__ = 148;
+                current_statement_begin__ = 149;
                 stan::model::assign(a1, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             beta_rw1_mean, 
                             "assigning variable a1");
-                current_statement_begin__ = 149;
+                current_statement_begin__ = 150;
                 stan::model::assign(P1, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), 
                             pow(beta_rw1_sd, 2), 
                             "assigning variable P1");
             }
-            current_statement_begin__ = 151;
+            current_statement_begin__ = 152;
             for (int i = (k_rw1 + 1); i <= k; ++i) {
-                current_statement_begin__ = 152;
+                current_statement_begin__ = 153;
                 stan::model::assign(a1, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             beta_rw2_mean, 
                             "assigning variable a1");
-                current_statement_begin__ = 153;
+                current_statement_begin__ = 154;
                 stan::model::assign(P1, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), 
                             pow(beta_rw2_sd, 2), 
                             "assigning variable P1");
             }
-            current_statement_begin__ = 155;
+            current_statement_begin__ = 156;
             for (int i = (k + 1); i <= m; ++i) {
-                current_statement_begin__ = 156;
+                current_statement_begin__ = 157;
                 stan::model::assign(a1, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             nu_mean, 
                             "assigning variable a1");
-                current_statement_begin__ = 157;
+                current_statement_begin__ = 158;
                 stan::model::assign(P1, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list())), 
                             pow(nu_sd, 2), 
@@ -1339,7 +1342,10 @@ public:
                 current_statement_begin__ = 235;
                 stan::math::assign(beta_rw, add(beta_rw, stan::model::rvalue(states, stan::model::cons_list(stan::model::index_min_max(1, k), stan::model::cons_list(stan::model::index_min_max(1, n), stan::model::nil_index_list())), "states")));
                 current_statement_begin__ = 236;
-                stan::math::assign(nu, add(nu, stan::model::rvalue(states, stan::model::cons_list(stan::model::index_min_max((k + 1), m), stan::model::cons_list(stan::model::index_min_max(1, n), stan::model::nil_index_list())), "states")));
+                if (as_bool(logical_gt(k_rw2, 0))) {
+                    current_statement_begin__ = 236;
+                    stan::math::assign(nu, add(nu, stan::model::rvalue(states, stan::model::cons_list(stan::model::index_min_max((k + 1), m), stan::model::cons_list(stan::model::index_min_max(1, n), stan::model::nil_index_list())), "states")));
+                }
                 }
                 current_statement_begin__ = 240;
                 for (int t = 1; t <= n; ++t) {

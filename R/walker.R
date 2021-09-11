@@ -16,9 +16,15 @@
 #' also a prior for the initial slope nu needs to be defined. See examples.
 #' 
 #' @note Beware of overfitting and identifiability issues. In particular, 
-#' be careful in not defining multiple intercept terms (only one should be present).
+#' be careful in not defining multiple intercept terms 
+#' (only one should be present).
+#' By default \code{rw1} and \code{rw2} calls add their own time-varying 
+#' intercepts, so you should use \code{0} or \code{-1} to remove some of them 
+#' (or the time-invariant intercept in the fixed-part of the formula).
+#' 
 #' 
 #' @import rstan Rcpp methods
+#' @importFrom rstan sampling
 #' @importFrom Rcpp loadModule evalCpp
 #' @importFrom stats model.matrix model.response rnorm delete.response terms window ts end glm poisson rgamma
 #' @importFrom rstantools rstan_config
@@ -47,6 +53,30 @@
 #' @seealso \code{\link{walker_glm}} for non-Gaussian models.
 #' @export
 #' @examples 
+#' set.seed(1)
+#' x <- rnorm(10)
+#' y <- x + rnorm(10)
+#' 
+#' # different intercept definitions:
+#' 
+#' # both fixed intercept and time-varying level,
+#' # can be unidentifiable without strong priors:
+#' fit1 <- walker(y ~ rw1(~ x, beta = c(0, 1)), 
+#'   beta = c(0, 1), chains = 1, iter = 1000) 
+#' \dontrun{
+#' # only time-varying level, using 0 or -1 removes intercept:
+#' fit2 <- walker(y ~ 0 + rw1(~ x, beta = c(0, 1)), chains = 1, iter = 1000)
+#' 
+#' # time-varying level, no covariates:
+#' fit3 <- walker(y ~ 0 + rw1(~ 1, beta = c(0, 1)), chains = 1, iter = 1000)
+#' 
+#' # fixed intercept no time-varying level:
+#' fit4 <- walker(y ~ rw1(~ 0 + x, beta = c(0, 1)), 
+#'   beta = c(0, 1), chains = 1, iter = 1000) 
+#' 
+#' # only time-varying effect of x:
+#' fit5 <- walker(y ~ 0 + rw1(~ 0 + x, beta = c(0, 1)), chains = 1, iter = 1000) 
+#' }
 #' 
 #' \dontrun{
 #' 
@@ -172,7 +202,7 @@ walker <- function(formula, data, sigma_y_prior = c(2, 0.01), beta, init, chains
     if (nrow(rw1_out$xreg) != n) stop("length of the series and covariates do not match.")
   } else {
     rw1_out <- list(xreg = matrix(0, n, 0), 
-      beta = numeric(2), sigma = numeric(2), 
+      beta = rep(1, 2), sigma = rep(1, 2), 
       gamma = matrix(0, 0, n))
   }
   if (!is.null(attr(all_terms, "specials")$rw2)) {
@@ -186,8 +216,8 @@ walker <- function(formula, data, sigma_y_prior = c(2, 0.01), beta, init, chains
     if (nrow(rw2_out$xreg) != n) stop("length of the series and covariates do not match.")
   } else {
     rw2_out <- list(xreg = matrix(0, n, 0), 
-      beta = numeric(2), sigma = numeric(2), 
-      nu = numeric(2), gamma = matrix(0, 0, n))
+      beta = rep(1, 2), sigma = rep(1, 2), 
+      nu = rep(1, 2), gamma = matrix(0, 0, n))
   }
   
   xreg_rw <- cbind(rw1_out$xreg, rw2_out$xreg)
@@ -198,12 +228,8 @@ walker <- function(formula, data, sigma_y_prior = c(2, 0.01), beta, init, chains
   
   if (any(is.na(xreg_fixed)) || any(is.na(xreg_rw))) stop("Missing values in covariates are not allowed.")
   
-  if(k_fixed > 0 && length(beta) != 2) {
-    stop("beta should be a vector of length two, defining the mean and standard deviation for the Gaussian prior of fixed coefficients. ")
-  }
-  if(length(sigma_y_prior) != 2) {
-    stop("sigma should be should be a vector of length two, defining the shape and rate for the Gamma prior of the standard deviation of y. ")
-  }
+  if(k_fixed > 0) check_normal(beta)
+  check_gamma(sigma_y_prior, "sigma_y_prior")
   
   if (is.null(gamma_y)) {
     gamma_y <- rep(1, n) 
@@ -228,8 +254,8 @@ walker <- function(formula, data, sigma_y_prior = c(2, 0.01), beta, init, chains
     y_miss = as.integer(is.na(y)),
     sigma_y_shape = sigma_y_prior[1],
     sigma_y_rate = sigma_y_prior[2],
-    beta_fixed_mean = if (k_fixed > 0) beta[1] else 0,
-    beta_fixed_sd = if (k_fixed > 0) beta[2] else 0,
+    beta_fixed_mean = if (k_fixed > 0) beta[1] else 1,
+    beta_fixed_sd = if (k_fixed > 0) beta[2] else 1,
     beta_rw1_mean = rw1_out$beta[1],
     beta_rw1_sd = rw1_out$beta[2],
     beta_rw2_mean = rw2_out$beta[1],
@@ -428,7 +454,7 @@ walker_glm <- function(formula, data, beta, init, chains,
     if (nrow(rw1_out$xreg) != n) stop("length of the series and covariates do not match.")
   } else {
     rw1_out <- list(xreg = matrix(0, n, 0), 
-      beta = numeric(2), sigma = numeric(2), 
+      beta = rep(1, 2), sigma = rep(1, 2), 
       gamma = matrix(0, 0, n))
   }
   if (!is.null(attr(all_terms, "specials")$rw2)) {
@@ -442,8 +468,8 @@ walker_glm <- function(formula, data, beta, init, chains,
     if (nrow(rw2_out$xreg) != n) stop("length of the series and covariates do not match.")
   } else {
     rw2_out <- list(xreg = matrix(0, n, 0), 
-      beta = numeric(2), sigma = numeric(2), 
-      nu = numeric(2), gamma = matrix(0, 0, n))
+      beta = rep(1, 2), sigma = rep(1, 2), 
+      nu = rep(1, 2), gamma = matrix(0, 0, n))
   }
   
   xreg_rw <- cbind(rw1_out$xreg, rw2_out$xreg)
@@ -455,9 +481,7 @@ walker_glm <- function(formula, data, beta, init, chains,
   
   if (any(is.na(xreg_fixed)) || any(is.na(xreg_rw))) stop("Missing values in covariates are not allowed.")
   
-  if(k_fixed > 0 && length(beta) != 2) {
-    stop("beta should be a vector of length two, defining the mean and standard deviation for the Gaussian prior of fixed coefficients. ")
-  }
+  if(k_fixed > 0) check_normal(beta, "beta")
   
   if (missing(u)) {
     u <- rep(1, n)
@@ -468,8 +492,8 @@ walker_glm <- function(formula, data, beta, init, chains,
   
   if(distribution == "binomial" && any(u < y)) stop("Number of trials 'u' must be larger or equal to number of successes y. ")
   
-  beta_fixed_mean = if (k_fixed > 0) beta[1] else 0
-  beta_fixed_sd = if (k_fixed > 0) beta[2] else 0
+  beta_fixed_mean = if (k_fixed > 0) beta[1] else 1
+  beta_fixed_sd = if (k_fixed > 0) beta[2] else 1
   beta_rw1_mean = rw1_out$beta[1]
   beta_rw1_sd = rw1_out$beta[2]
   beta_rw2_mean = rw2_out$beta[1]
