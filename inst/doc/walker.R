@@ -47,7 +47,7 @@ plot_predict(pred)
 ## ----walker_rw2---------------------------------------------------------------
 fit_rw2 <-walker(y ~ -1 + 
     rw2(~ x1 + x2, beta = c(0, 10), sigma = c(2, 0.001), nu = c(0, 10)), 
-  refresh = 0, chains = 1, sigma_y = c(2, 0.001))
+  refresh = 0, init = 0, chains = 1, sigma_y = c(2, 0.001))
 plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
 
 ## ----naive, eval = FALSE------------------------------------------------------
@@ -56,7 +56,7 @@ plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
 #    chains = 2, cores = 2, iter = 1e4,
 #    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
 #    naive = TRUE,
-#    control = list(adapt_delta = 0.99, max_treedepth = 12))
+#    control = list(adapt_delta = 0.999, max_treedepth = 12))
 #  
 #  set.seed(1)
 #  kalman_fit <- walker_rw1(y ~ x1 + x2, refresh = 0,
@@ -72,7 +72,7 @@ plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
 #    beta = cbind(0, rep(5, 3)), sigma = cbind(0, rep(2, 4)),
 #    naive = TRUE, save_warmup = FALSE,
 #    pars = c("sigma_y", "sigma_b"),
-#    control = list(adapt_delta = 0.99, max_treedepth = 12))
+#    control = list(adapt_delta = 0.999, max_treedepth = 12))
 #  
 #  set.seed(1)
 #  kalman_fit <- walker_rw1(y ~ x1 + x2, refresh = 0,
