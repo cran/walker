@@ -39,6 +39,19 @@ plot_coefs(fit, scales = "free") + ggplot2::theme_bw()
 ## ----ppc----------------------------------------------------------------------
 pp_check(fit)
 
+## -----------------------------------------------------------------------------
+library(ggplot2)
+library(dplyr)
+fitted <- fitted(fit) # estimates given our actual observed data
+newdata <- data.frame(x1 = c(x1[1:59], rep(0, 41)), x2 = x2)
+pred_x1_1 <- predict_counterfactual(fit, newdata, type = "mean")
+
+cbind(as.data.frame(rbind(fitted, pred_x1_1)), 
+    type = rep(c("observed", "counterfactual"), each = n), time = 1:n) %>% 
+    ggplot(aes(x = time, y = mean)) + 
+    geom_ribbon(aes(ymin = `2.5%`, ymax = `97.5%`, fill = type), alpha = 0.2) + 
+    geom_line(aes(colour = type)) + theme_bw()
+
 ## ----prediction---------------------------------------------------------------
 new_data <- data.frame(x1 = rnorm(10, mean = 2), x2 = cos((n + 1):(n + 10)))
 pred <- predict(fit, new_data)
