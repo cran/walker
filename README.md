@@ -23,6 +23,9 @@ devtools::install_github("helske/walker")
 NEWS
 ---------------------------------------------
 
+### 11.9.2023, version 1.0.8
+
+  * Updated the Stan codes to accomodate the new array syntax. PR by Andrew Johnson.
 
 ### 25.7.2023, version 1.0.7
 
