@@ -7,16 +7,16 @@
 \method{pp_check}{walker_fit}(object, ...)
 }
 \arguments{
-\item{object}{An output from \code{\link{walker}}.}
+\item{object}{An output from \code{\link[=walker]{walker()}}.}
 
-\item{...}{Further parameters to \code{\link{ppc_ribbon}}.}
+\item{...}{Further parameters to \code{\link[bayesplot:PPC-intervals]{bayesplot::ppc_ribbon()}}.}
 }
 \description{
 Plots sample quantiles from posterior predictive sample.
 }
 \details{
-For other types of posterior predictive checks for example with \code{bayesplot}, 
-you can extract the variable \code{yrep} from the output, see examples.#'
+For other types of posterior predictive checks for example with \code{bayesplot},
+you can extract the variable \code{yrep} from the output, see examples.
 }
 \examples{
 \dontrun{
@@ -25,7 +25,8 @@ you can extract the variable \code{yrep} from the output, see examples.#'
 y_rep <- extract(object$stanfit, pars = "y_rep", permuted = TRUE)$y_rep
 
 # For non-gaussian model:
-weights <- extract(object$stanfit, pars = "weights", permuted = TRUE)$weights
+weights <- extract(object$stanfit, 
+pars = "weights", permuted = TRUE)$weights
 y_rep <- y_rep[sample(1:nrow(y_rep), 
   size = nrow(y_rep), replace = TRUE, prob = weights), , drop = FALSE]
 }

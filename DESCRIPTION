@@ -2,7 +2,7 @@ Package: walker
 Type: Package
 Title: Bayesian Generalized Linear Models with Time-Varying
         Coefficients
-Version: 1.0.8
+Version: 1.0.10
 Description: Efficient Bayesian generalized linear models with time-varying coefficients 
     as in Helske (2022, <doi:10.1016/j.softx.2022.101016>). Gaussian, Poisson, and binomial 
     observations are supported. The Markov chain Monte Carlo (MCMC) computations are done using 
@@ -19,23 +19,23 @@ Authors@R:
 License: GPL (>= 3)
 Suggests: diagis, gridExtra, knitr (>= 1.11), rmarkdown (>= 0.8.1),
         testthat
-Depends: bayesplot, R (>= 3.4.0), Rcpp (>= 0.12.9), rstan (>= 2.26.0)
-Imports: coda, dplyr, Hmisc, ggplot2, KFAS, loo, methods, RcppParallel,
-        rlang, rstantools (>= 2.0.0)
-LinkingTo: StanHeaders (>= 2.26.0), rstan (>= 2.26.0), BH (>= 1.66.0),
-        Rcpp (>= 0.12.9), RcppArmadillo, RcppEigen (>= 0.3.3.3.0),
-        RcppParallel
+Depends: bayesplot, R (>= 3.4.0), rstan (>= 2.26.0)
+Imports: coda, dplyr, Hmisc, ggplot2, KFAS, loo, methods, Rcpp (>=
+        0.12.9), RcppParallel, rlang, rstantools (>= 2.0.0)
+LinkingTo: BH (>= 1.66.0), Rcpp (>= 0.12.9), RcppArmadillo, RcppEigen
+        (>= 0.3.3.3.0), RcppParallel, rstan (>= 2.26.0), StanHeaders
+        (>= 2.26.0)
 SystemRequirements: GNU make
 Biarch: true
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 ByteCompile: true
 URL: https://github.com/helske/walker
 BugReports: https://github.com/helske/walker/issues
 Encoding: UTF-8
 NeedsCompilation: yes
-Packaged: 2023-09-11 12:04:59 UTC; jvhels
+Packaged: 2024-08-29 17:11:57 UTC; jvhels
 Author: Jouni Helske [aut, cre] (<https://orcid.org/0000-0001-7130-793X>)
 Maintainer: Jouni Helske <jouni.helske@iki.fi>
 Repository: CRAN
-Date/Publication: 2023-09-11 13:00:02 UTC
+Date/Publication: 2024-08-30 06:40:02 UTC

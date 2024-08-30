@@ -24,11 +24,10 @@ fit <- walker(y ~ -1 + rw1(~ x1 + x2, beta = c(0, 10), sigma = c(2, 10)),
 
 ## ----pars---------------------------------------------------------------------
 print(fit$stanfit, pars = c("sigma_y", "sigma_rw1"))
-library(bayesplot)
 mcmc_areas(as.matrix(fit$stanfit), regex_pars = c("sigma_y", "sigma_rw1"))
 
 ## ----plot_with_true_betas-----------------------------------------------------
-betas <- summary(fit$stanfit, "beta_rw")$summary[, "mean"]
+betas <- rstan::summary(fit$stanfit, "beta_rw")$summary[, "mean"]
 
 ts.plot(cbind(rw, beta1, beta2, matrix(betas, ncol = 3)),
   col = rep(1:3, 2), lty = rep(1:2, each = 3))
@@ -58,7 +57,7 @@ pred <- predict(fit, new_data)
 plot_predict(pred)
 
 ## ----walker_rw2---------------------------------------------------------------
-fit_rw2 <-walker(y ~ -1 + 
+fit_rw2 <- walker(y ~ -1 + 
     rw2(~ x1 + x2, beta = c(0, 10), sigma = c(2, 0.001), nu = c(0, 10)), 
   refresh = 0, init = 0, chains = 1, sigma_y = c(2, 0.001))
 plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
@@ -96,7 +95,7 @@ plot_coefs(fit_rw2, scales = "free") + ggplot2::theme_bw()
 #  
 #  save(naive_fit, kalman_fit, file = "vignette_results.rds")
 
-## ---- echo = FALSE------------------------------------------------------------
+## ----echo = FALSE-------------------------------------------------------------
 load("vignette_results.rds")
 
 ## ----warnings-and-time--------------------------------------------------------
